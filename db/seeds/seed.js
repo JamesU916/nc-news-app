@@ -1,7 +1,6 @@
 const db = require("../connection")
 const format = require("pg-format")
-const { formatTopics, formatUsers, formatArticles } = require("./utils");
-const { topicData, userData, articleData } = require("../data/test-data");
+const { formatTopics, formatUsers, formatArticles, getArticleId, formatComments } = require("./utils");
 
 const seed = ({ topicData, userData, articleData, commentData }) => {
   return db.query("DROP TABLE IF EXISTS comments;")
@@ -24,7 +23,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
     return createArticles(articleData)
   })
   .then(() => {
-    return createComments()
+    return createComments(commentData)
   })
 };
 
@@ -39,7 +38,7 @@ function createTopics(topicData) {
   )
   .then(() => {
     const formattedTopics = formatTopics(topicData);
-    const topicsData = format(`INSERT INTO topics (slug, description, img_url) VALUES %L RETURNING *`, formattedTopics)
+    const topicsData = format(`INSERT INTO topics (description, slug, img_url) VALUES %L RETURNING *`, formattedTopics)
     return db.query(topicsData);
   })
 };
@@ -75,14 +74,14 @@ function createArticles(articleData) {
       )`)
   )
   .then(() => {
-    const formattedArticles = formatArticles(articleData, topicData, userData);
-    const articlesData = format(`INSERT INTO articles (title, topic, author, body, created_at, article_img_url) VALUES %L RETURNING *`, formattedArticles)
-    console.log(formattedArticles)
+    const formattedArticles = formatArticles(articleData);
+    const articlesData = format(`INSERT INTO articles (title, topic, author, body, created_at, votes, article_img_url) VALUES %L RETURNING *`, formattedArticles)
     return db.query(articlesData);
   })
+  
 };
 
-function createComments() {
+function createComments(commentData) {
   return db.query(
     (`CREATE TABLE comments (
       comment_id SERIAL PRIMARY KEY NOT NULL,
@@ -95,5 +94,10 @@ function createComments() {
       created_at TIMESTAMP NOT NULL
       )`)
   )
+  .then(() => {
+    const formattedComments = formatComments(commentData, getArticleId);
+    const commentsData = format(`INSERT INTO comments (comment_id, article_id, body, votes, author, created_at) VALUES %L RETURNING *`, formattedComments, getArticleId)
+    return db.query(commentsData);
+  })
 };
 module.exports = seed;

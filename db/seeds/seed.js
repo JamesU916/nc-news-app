@@ -22,8 +22,8 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
   .then(() => {
     return createArticles(articleData)
   })
-  .then(() => {
-    return createComments(commentData)
+  .then(({rows: insertedArticles}) => {
+    return createComments(commentData, insertedArticles);
   })
 };
 
@@ -81,7 +81,7 @@ function createArticles(articleData) {
   
 };
 
-function createComments(commentData) {
+function createComments(commentData, insertedArticles) {
   return db.query(
     (`CREATE TABLE comments (
       comment_id SERIAL PRIMARY KEY NOT NULL,
@@ -95,8 +95,9 @@ function createComments(commentData) {
       )`)
   )
   .then(() => {
-    const formattedComments = formatComments(commentData, getArticleId);
-    const commentsData = format(`INSERT INTO comments (comment_id, article_id, body, votes, author, created_at) VALUES %L RETURNING *`, formattedComments, getArticleId)
+    const articleLookup = getArticleId(insertedArticles);
+    const formattedComments = formatComments(commentData, articleLookup);
+    const commentsData = format(`INSERT INTO comments (article_id, body, votes, author, created_at) VALUES %L RETURNING *`, formattedComments, articleLookup)
     return db.query(commentsData);
   })
 };

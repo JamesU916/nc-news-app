@@ -189,8 +189,8 @@ describe("formatComments helper functions tests", () => {
   };
     const result = formatComments(commentsInput, articleId)
     const expectedResult = [ 
-      [1, 1, "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!", 16, "butter_bridge", new Date("2020-04-06T13:17:00.000Z")],
-      [2, 2, "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.", 14, "butter_bridge", new Date("2020-10-31T03:03:00.000Z")],
+      [1, "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!", 16, "butter_bridge", new Date("2020-04-06T13:17:00.000Z")],
+      [2, "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.", 14, "butter_bridge", new Date("2020-10-31T03:03:00.000Z")],
     ]
       expect(result).toEqual(expectedResult);
   })

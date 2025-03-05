@@ -30,24 +30,17 @@ function formatArticles(articlesData){
 
 function getArticleId(articlesData){
   const articleId = {};
-  articlesData.forEach((article) => {
-    articleId[article.title] = article.article_id;
+  articlesData.forEach(({title, article_id }) => {
+    articleId[title] = article_id;
   });
   return articleId;
 }
 
 function formatComments(commentsData, articleId){
-  let commentIdCount = 1;
-  let articleIdCount = 1;
   const formattedComments = commentsData.map(({article_title, body, votes = 0, author, created_at}) => {
-    if (!articleId[article_title]) {
-      articleId[article_title] = articleIdCount;
-      articleIdCount++;
-    }
     const {created_at: formattedDate} = convertTimestampToDate( {created_at} );
-    const currentCommentId = commentIdCount;
-    commentIdCount++;
-    return [currentCommentId, articleId[article_title], body, votes, author, formattedDate]
+    const foundArticleId = articleId[article_title];
+    return [foundArticleId, body, votes, author, formattedDate]
   });
   return formattedComments;
 };

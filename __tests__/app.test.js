@@ -43,3 +43,38 @@ describe("GET /api/topics", () => {
     });
   });
 });
+
+describe("GET /api/articles/:article_id", () => {
+  test("200: Responds with an article with the specified ID", () => {
+    return request(app)
+    .get("/api/articles/2")
+    .expect(200)
+    .then(({ body }) => {
+      const article = body.article;
+      expect(article.author).toBe("icellusedkars")
+      expect(article.title).toBe("Sony Vaio; or, The Laptop")
+      expect(article.article_id).toBe(2)
+      expect(article.body).toBe("Call me Mitchell. Some years ago..")
+      expect(article.topic).toBe("mitch")
+      expect(article.created_at).toBe("2020-10-16T05:03:00.000Z")
+      expect(article.votes).toBe(0)
+      expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+    })
+  })
+  test("400: Responds with an error when a non-numerical value is passed as a query", () => {
+    return request(app)
+    .get("/api/articles/badRequest")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request")
+    });
+  });
+  test("404: Responds with an error when a numerical value is passed that doesn't exist", () => {
+    return request(app)
+    .get("/api/articles/9999999")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("404 Not Found")
+    });
+  });
+})

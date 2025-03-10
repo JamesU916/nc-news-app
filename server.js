@@ -1,16 +1,8 @@
-const http = require("http");
+const app = require("./app");
 
-const server = http.createServer((request, response) => {
-    response.setHeader("content-type", "app/json")
-    response.statusCode = 200
-    response.write(JSON.stringify({msg: "Server is now running"}))
-    response.end();
-});
-
-
-server.listen(9096, (err) => {
-    if (err) {
-        console.log(err)
+app.listen(9096, (error) => {
+    if (error) {
+        console.log(error)
     } else {
         console.log("Running on 9096")
     }

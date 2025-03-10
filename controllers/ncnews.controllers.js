@@ -17,7 +17,7 @@ exports.getArticleById = (request, response, next) => {
         response.status(404).json({msg: "Not Found"})
     }
     fetchArticleById(article_id).then((article) => {
-        response.status(200).json({ article: article[0] })
+        response.status(200).json({ article })
     })
     .catch((error) => {
         next(error)

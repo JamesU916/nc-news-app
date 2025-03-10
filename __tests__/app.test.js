@@ -26,6 +26,17 @@ describe("GET /api", () => {
   });
 });
 
+describe("GET /api/notAnEndpoint", () => {
+  test("404: Returns a 404 when passed an endpoint that doesn't exist", () => {
+    return request(app)
+    .get("/api/notAnEndpoint")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("404 Not Found")
+    });
+  });
+})
+
 describe("GET /api/topics", () => {
   test("200: Responds with an array of topic objects, each containing a slug and description property", () => {
     return request(app)

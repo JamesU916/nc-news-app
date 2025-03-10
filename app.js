@@ -9,6 +9,10 @@ app.get('/api/topics', getTopics);
 
 app.get('/api/articles/:article_id', getArticleById);
 
+app.all('*', (request, response, next) => {
+    response.status(404).send({ msg: "404 Not Found"});
+})
+
 app.use(handlePsqlErrors);
 
 app.use(handleCustomErrors);

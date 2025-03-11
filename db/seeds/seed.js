@@ -88,10 +88,10 @@ function createComments(commentData, insertedArticles) {
       article_id INT NOT NULL,
       FOREIGN KEY (article_id) REFERENCES articles (article_id),
       body TEXT NOT NULL,
-      votes INT DEFAULT 0 NOT NULL,
+      votes INT DEFAULT 0,
       author VARCHAR (200) NOT NULL,
       FOREIGN KEY (author) REFERENCES users (username),
-      created_at TIMESTAMP NOT NULL
+      created_at TIMESTAMP DEFAULT NOW()
       )`)
   )
   .then(() => {

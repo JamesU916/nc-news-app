@@ -228,3 +228,53 @@ describe("POST: /api/articles/:article_id/comments", () => {
     });
   });
 })
+
+describe("PATCH: /api/articles/:article_id", () => {
+  test("200: Responds with the updated article with incremented votes", () => {
+    return request(app)
+    .patch("/api/articles/1")
+    .send({ inc_votes: 1})
+    .expect(200)
+    .then(({ body }) => {
+      article = body.article;
+      expect(article.votes).toBe(101);
+    })
+  })
+  test("200: Responds with the updated article with decremented votes", () => {
+    return request(app)
+    .patch("/api/articles/1")
+    .send({ inc_votes: -100})
+    .expect(200)
+    .then(({ body }) => {
+      article = body.article;
+      expect(article.votes).toBe(0);
+    })
+  })
+  test("400: Responds with an error if the increment value is not of number value", () => {
+    return request(app)
+    .patch("/api/articles/1")
+    .send({ inc_votes: "badRequest"})
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request")
+    })
+  })
+  test("400: Responds with an error if the article id is not of number value", () => {
+    return request(app)
+    .patch("/api/articles/badRequest")
+    .send({ inc_votes: 1})
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request")
+    })
+  })
+  test("404: Responds with an error if the article doesn't exist", () => {
+    return request(app)
+    .patch("/api/articles/9999999")
+    .send({ inc_votes: 1})
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("404 Not Found")
+    })
+  })
+})

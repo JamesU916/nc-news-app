@@ -69,6 +69,9 @@ exports.postComment = (request, response, next) => {
 exports.patchArticleVotesById = (request, response, next) => {
     const { article_id } = request.params;
     const { inc_votes } = request.body;
+    if (inc_votes === undefined) {
+        return response.status(400).json({ msg: "400 Bad Request"})
+    }
     addArticleVotesById(inc_votes, article_id)
     .then((article) => {
         response.status(200).send({ article })

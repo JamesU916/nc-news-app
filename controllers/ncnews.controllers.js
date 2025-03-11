@@ -1,5 +1,5 @@
 const endpoints = require("../endpoints.json");
-const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById, addComment } = require("../models/ncnews.models");
+const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById, addComment, addArticleVotesById } = require("../models/ncnews.models");
 
 exports.getEndpoints = (request, response) => {
     response.status(200).json({endpoints});
@@ -64,4 +64,16 @@ exports.postComment = (request, response, next) => {
     .catch((error) => {
         next(error)
     });
+}
+
+exports.patchArticleVotesById = (request, response, next) => {
+    const { article_id } = request.params;
+    const { inc_votes } = request.body;
+    addArticleVotesById(inc_votes, article_id)
+    .then((article) => {
+        response.status(200).send({ article })
+    })
+    .catch((error) => {
+        next(error)
+    })
 }

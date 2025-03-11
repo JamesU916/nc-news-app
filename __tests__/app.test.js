@@ -191,6 +191,23 @@ describe("POST: /api/articles/:article_id/comments", () => {
       expect(typeof comment.created_at).toBe("string")
     })
   })
+  test("201: Successfully adds a new comment for an article & ignores other properties passed in the object", () => {
+    return request(app)
+    .post("/api/articles/1/comments")
+    .send({"username": "icellusedkars", "body": "test body", "article_id": 1})
+    .expect(201)
+    .then(({ body }) => {
+      comment = body.comment
+      expect(comment).toMatchObject({
+        body: "test body",
+        votes: 0,
+        author: "icellusedkars"
+      })
+      expect(comment.article_id).toBe(1)
+      expect(comment.comment_id).toBe(19)
+      expect(typeof comment.created_at).toBe("string")
+    })
+  })
   test("400: Responds with an error when a attempting to post to an article ID of string value", () => {
     return request(app)
     .post("/api/articles/badRequest/comments")
@@ -202,7 +219,7 @@ describe("POST: /api/articles/:article_id/comments", () => {
   });
   test("400: Responds with an error when a required parameter is missing", () => {
     return request(app)
-    .post("/api/articles/badRequest/comments")
+    .post("/api/articles/1/comments")
     .send({"username": "icellusedkars"})
     .expect(400)
     .then(({ body }) => {
@@ -211,7 +228,7 @@ describe("POST: /api/articles/:article_id/comments", () => {
   });
   test("400: Responds with an error when a required parameter is of the wrong type", () => {
     return request(app)
-    .post("/api/articles/badRequest/comments")
+    .post("/api/articles/1/comments")
     .send({"username": "icellusedkars", "body": 1})
     .expect(400)
     .then(({ body }) => {
@@ -222,6 +239,15 @@ describe("POST: /api/articles/:article_id/comments", () => {
     return request(app)
     .post("/api/articles/9999999/comments")
     .send({"username": "icellusedkars", "body": "test body"})
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("404 Not Found")
+    });
+  });
+  test("404: Responds with an error attempting to post to an article with a username that doesn't exist in the database", () => {
+    return request(app)
+    .post("/api/articles/1/comments")
+    .send({"username": "NotaUser", "body": "test body"})
     .expect(404)
     .then(({ body }) => {
       expect(body.msg).toBe("404 Not Found")

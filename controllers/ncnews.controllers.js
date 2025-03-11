@@ -1,5 +1,5 @@
 const endpoints = require("../endpoints.json");
-const { fetchTopics, fetchArticleById, fetchArticles } = require("../models/ncnews.models");
+const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById } = require("../models/ncnews.models");
 
 exports.getEndpoints = (request, response) => {
     response.status(200).json({endpoints});
@@ -29,3 +29,16 @@ exports.getArticleById = (request, response, next) => {
         next(error)
     });
 };
+
+exports.getArticleCommentsById = (request, response, next) => {
+    const { article_id } = request.params;
+    if(!article_id) {
+        response.status(404).json({ msg: "Not Found"})
+    }
+    fetchArticleCommentsById(article_id).then((comments) => {
+        response.status(200).json({ comments : comments })
+    })
+    .catch((error) => {
+        next(error)
+    });
+}

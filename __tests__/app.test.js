@@ -112,3 +112,40 @@ describe("GET /api/articles/:article_id", () => {
   });
 })
 
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: Gets all comments for a given article, sorted in descending date order", () => {
+    return request(app)
+    .get("/api/articles/1/comments")
+    .expect(200)
+    .then(({ body }) => {
+      const comments = body.comments;
+      comments.forEach((comment) => {
+        expect(typeof comment.comment_id).toBe("number")
+        expect(typeof comment.votes).toBe("number")
+        expect(typeof comment.created_at).toBe("string")
+        expect(typeof comment.author).toBe("string")
+        expect(typeof comment.body).toBe("string")
+        expect(typeof comment.article_id).toBe("number")
+        expect(comment.article_id).toBe(1)
+      })
+      expect(comments).toBeSortedBy("created_at", { descending: true});
+    })
+  })
+  test("400: Responds with an error when a non-numerical value is passed as a query", () => {
+    return request(app)
+    .get("/api/articles/badRequest/comments")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request")
+    });
+  });
+  test("404: Responds with an error when a numerical value is passed that doesn't exist", () => {
+    return request(app)
+    .get("/api/articles/9999999/comments")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("404 Not Found")
+    });
+  });
+})
+

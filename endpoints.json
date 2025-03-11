@@ -59,5 +59,21 @@
         }
       ]
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "posts a comment with an associated article ID",
+    "queries": ["username", "body"],
+    "exampleResponse": {
+      "articles": [
+        {
+          "comment_id": 2,
+          "votes": 14,
+          "created_at": "2020-10-16T05:03:00.000Z",
+          "author": "icellusedkars",
+          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          "article_id": 2
+        }
+      ]
+    }
   }
 }

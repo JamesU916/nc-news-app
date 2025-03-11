@@ -1,5 +1,5 @@
 const endpoints = require("../endpoints.json");
-const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById } = require("../models/ncnews.models");
+const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById, addComment } = require("../models/ncnews.models");
 
 exports.getEndpoints = (request, response) => {
     response.status(200).json({endpoints});
@@ -37,6 +37,29 @@ exports.getArticleCommentsById = (request, response, next) => {
     }
     fetchArticleCommentsById(article_id).then((comments) => {
         response.status(200).json({ comments : comments })
+    })
+    .catch((error) => {
+        next(error)
+    });
+}
+
+exports.postComment = (request, response, next) => {
+    const { article_id } = request.params;
+    const { username, body } = request.body;
+    if(!username || !body || !username && !body) {
+        return response.status(400).json({ msg: "400 Bad Request - Comment must include both a username and body"})
+    }
+    if(typeof username !== "string" || typeof body !== "string" || typeof username !== "string" && typeof body !== "string") {
+        return response.status(400).json({ msg: "400 Bad Request - Comment parameters must be of string value"})
+    }
+    const newComment = {
+        author: username,
+        body: body,
+        article_id: article_id
+    }
+    addComment(newComment.author, newComment.body, newComment.article_id)
+    .then((comment) => {
+        response.status(201).send({comment: comment})
     })
     .catch((error) => {
         next(error)

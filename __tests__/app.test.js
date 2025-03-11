@@ -149,3 +149,58 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 })
 
+describe("POST: /api/articles/:article_id/comments", () => {
+  test("201: Successfully adds a new comment for an article", () => {
+    return request(app)
+    .post("/api/articles/1/comments")
+    .send({"username": "icellusedkars", "body": "test body"})
+    .expect(201)
+    .then(({ body }) => {
+      comment = body.comment
+      expect(comment).toMatchObject({
+        body: "test body",
+        votes: 0,
+        author: "icellusedkars"
+      })
+      expect(comment.article_id).toBe(1)
+      expect(comment.comment_id).toBe(19)
+      expect(typeof comment.created_at).toBe("string")
+    })
+  })
+  test("400: Responds with an error when a attempting to post to an article ID of string value", () => {
+    return request(app)
+    .post("/api/articles/badRequest/comments")
+    .send({"username": "icellusedkars", "body": "test body"})
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request")
+    });
+  });
+  test("400: Responds with an error when a required parameter is missing", () => {
+    return request(app)
+    .post("/api/articles/badRequest/comments")
+    .send({"username": "icellusedkars"})
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request - Comment must include both a username and body")
+    });
+  });
+  test("400: Responds with an error when a required parameter is of the wrong type", () => {
+    return request(app)
+    .post("/api/articles/badRequest/comments")
+    .send({"username": "icellusedkars", "body": 1})
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request - Comment parameters must be of string value")
+    });
+  });
+  test("404: Responds with an error attempting to post to an article that doesn't exist", () => {
+    return request(app)
+    .post("/api/articles/9999999/comments")
+    .send({"username": "icellusedkars", "body": "test body"})
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("404 Not Found")
+    });
+  });
+})

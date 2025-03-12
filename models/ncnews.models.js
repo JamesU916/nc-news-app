@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 
 exports.fetchTopics = () => {
-    return db.query(`SELECT slug, description FROM topics`).then(({rows}) => {
+    return db.query(`SELECT slug, description FROM topics`).then(({ rows }) => {
         return rows;
     });
 };
@@ -14,6 +14,12 @@ exports.fetchArticles = () => {
             return rows
         });
 };
+
+exports.fetchUsers = () => {
+    return db.query(`SELECT username, users.name, users.avatar_url FROM users`).then(({ rows }) => {
+        return rows;
+    });
+}
 
 exports.fetchArticleById = (id) => {
     return db.query(`SELECT * FROM articles WHERE article_id = $1`, [id]).then(({ rows }) => {

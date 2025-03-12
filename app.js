@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { getEndpoints, getTopics, getArticleById, getArticles, getArticleCommentsById, postComment, patchArticleVotesById, deleteCommentById } = require('./controllers/ncnews.controllers');
+const { getEndpoints, getTopics, getArticleById, getArticles, getArticleCommentsById, postComment, patchArticleVotesById, deleteCommentById, getUsers } = require('./controllers/ncnews.controllers');
 const { handlePsqlErrors, handleCustomErrors, handleServerErrors } = require("./controllers/errors.controllers");
 
 app.use(express.json());
@@ -12,6 +12,8 @@ app.get('/api/topics', getTopics);
 app.get('/api/articles/:article_id', getArticleById);
 
 app.get('/api/articles', getArticles);
+
+app.get('/api/users', getUsers);
 
 app.get('/api/articles/:article_id/comments', getArticleCommentsById);
 

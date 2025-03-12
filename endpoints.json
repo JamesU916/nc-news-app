@@ -64,7 +64,7 @@
     "description": "posts a comment with an associated article ID",
     "queries": ["username", "body"],
     "exampleResponse": {
-      "articles": [
+      "comments": [
         {
           "comment_id": 2,
           "votes": 14,
@@ -72,6 +72,32 @@
           "author": "icellusedkars",
           "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
           "article_id": 2
+        }
+      ]
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "responds with an updated article with updated votes",
+    "queries": ["inc_votes"],
+    "exampleResponse": {
+      "articles": [
+        {
+          "title": "Living in the shadow of a great man",
+          "topic": "mitch",
+          "author": "butter_bridge",
+          "body": "I find this existence challenging",
+          "created_at": 1594329060000,
+          "votes": 101,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
+      ]
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes comment with specified id from database",
+    "exampleResponse": {
+      "comment": [
+        {
         }
       ]
     }

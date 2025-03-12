@@ -1,3 +1,4 @@
+const { sort } = require("../db/data/test-data/articles");
 const endpoints = require("../endpoints.json");
 const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById, addComment, addArticleVotesById, removeCommentById, fetchUsers } = require("../models/ncnews.models");
 
@@ -11,9 +12,13 @@ exports.getTopics = (request, response) => {
     });
 };
 
-exports.getArticles = (request, response) => {
-    fetchArticles().then((articles) => {
+exports.getArticles = (request, response, next) => {
+    const {sort_by, order } = request.query;
+    fetchArticles(sort_by, order).then((articles) => {
         response.status(200).json({ articles })
+    })
+    .catch((error) => {
+        next(error)
     });
 };
 

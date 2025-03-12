@@ -103,6 +103,47 @@ describe("GET /api/articles", () => {
   })
 })
 
+describe("GET /api/articles?sort_by=:sort_by&order=:order", () => {
+  test("200: Responds with all articles sorted by title in ascending order", () => {
+    return request(app)
+    .get("/api/articles?sort_by=title&order=asc")
+    .expect(200)
+    .then(({ body }) => {
+      const articles = body.articles
+      expect(articles.length).toBe(13)
+      expect(articles[0].title).toBe("A")
+      expect(articles[12].title).toBe("Z")
+    })
+  })
+  test("200: Responds with all articles sorted by author in descending order when no order query is passed", () => {
+    return request(app)
+    .get("/api/articles?sort_by=author")
+    .expect(200)
+    .then(({ body }) => {
+      const articles = body.articles
+      expect(articles.length).toBe(13)
+      expect(articles[0].author).toBe("rogersop")
+      expect(articles[12].author).toBe("butter_bridge")
+    })
+  })
+  test("400: Responds with an error if the sort_by query is invalid", () => {
+    return request(app)
+    .get("/api/articles?sort_by=badRequest&order=asc")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request - Must be sorted by a valid column")
+    })
+  })
+  test("400: Responds with an error if the order query is invalid", () => {
+    return request(app)
+    .get("/api/articles?sort_by=author&order=badRequest")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request - Must be ordered in either ascending or descending order")
+    })
+  })
+})
+
 describe("GET /api/articles/:article_id", () => {
   test("200: Responds with an article with the specified ID", () => {
     return request(app)

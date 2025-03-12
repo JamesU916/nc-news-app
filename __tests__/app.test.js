@@ -25,7 +25,7 @@ describe("GET /api", () => {
 });
 
 describe("GET /api/notAnEndpoint", () => {
-  test("404: Returns a 404 when passed an endpoint that doesn't exist", () => {
+  test("404: Returns a 404 when passed an endpoint that does not exist", () => {
     return request(app)
     .get("/api/notAnEndpoint")
     .expect(404)
@@ -110,7 +110,7 @@ describe("GET /api/articles/:article_id", () => {
       expect(body.msg).toBe("400 Bad Request")
     });
   });
-  test("404: Responds with an error when a numerical value is passed that doesn't exist", () => {
+  test("404: Responds with an error when a numerical value is passed that does not exist", () => {
     return request(app)
     .get("/api/articles/9999999")
     .expect(404)
@@ -163,7 +163,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       expect(body.msg).toBe("400 Bad Request")
     });
   });
-  test("404: Responds with an error when a numerical value is passed that doesn't exist", () => {
+  test("404: Responds with an error when a numerical value is passed that does not exist", () => {
     return request(app)
     .get("/api/articles/9999999/comments")
     .expect(404)
@@ -235,7 +235,7 @@ describe("POST: /api/articles/:article_id/comments", () => {
       expect(body.msg).toBe("400 Bad Request - Comment parameters must be of string value")
     });
   });
-  test("404: Responds with an error attempting to post to an article that doesn't exist", () => {
+  test("404: Responds with an error attempting to post to an article that does not exist", () => {
     return request(app)
     .post("/api/articles/9999999/comments")
     .send({"username": "icellusedkars", "body": "test body"})
@@ -244,7 +244,7 @@ describe("POST: /api/articles/:article_id/comments", () => {
       expect(body.msg).toBe("404 Not Found")
     });
   });
-  test("404: Responds with an error attempting to post to an article with a username that doesn't exist in the database", () => {
+  test("404: Responds with an error attempting to post to an article with a username that does not exist in the database", () => {
     return request(app)
     .post("/api/articles/1/comments")
     .send({"username": "NotaUser", "body": "test body"})
@@ -295,7 +295,7 @@ describe("PATCH: /api/articles/:article_id", () => {
       expect(body.msg).toBe("400 Bad Request")
     })
   })
-  test("400: Responds with an error if the object passed doesn't have an inc_votes key", () => {
+  test("400: Responds with an error if the object passed does not have an inc_votes key", () => {
     return request(app)
     .patch("/api/articles/1")
     .send({ wrong_key: 100 })
@@ -313,7 +313,7 @@ describe("PATCH: /api/articles/:article_id", () => {
       expect(body.msg).toBe("400 Bad Request")
     })
   })
-  test("404: Responds with an error if the article doesn't exist", () => {
+  test("404: Responds with an error if the article does not exist", () => {
     return request(app)
     .patch("/api/articles/9999999")
     .send({ inc_votes: 1 })
@@ -322,4 +322,34 @@ describe("PATCH: /api/articles/:article_id", () => {
       expect(body.msg).toBe("404 Not Found")
     })
   })
+})
+
+describe("DELETE: /api/comments/:comment_id", () => {
+  test("204: Deletes the comment with the specified ID and will not return anything", () => {
+    return request(app)
+    .delete("/api/comments/1")
+    .expect(204)
+    .then(() => {
+      return db.query(`SELECT * FROM comments WHERE comment_id = 1`)
+    })
+    .then(({ rows }) => {
+      expect(rows.length).toBe(0);
+    });
+  })
+  test("404: Responds with an error if the comment ID is not of string type", () => {
+    return request(app)
+    .delete("/api/comments/badRequest")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request")
+    });
+  })
+  test("400: Responds with an error if the comment ID does not exist", () => {
+    return request(app)
+    .delete("/api/comments/9999999")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("404 Not Found - Comment does not exist")
+    })
+  });
 })

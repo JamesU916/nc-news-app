@@ -1,5 +1,5 @@
 const endpoints = require("../endpoints.json");
-const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById, addComment, addArticleVotesById } = require("../models/ncnews.models");
+const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById, addComment, addArticleVotesById, removeCommentById } = require("../models/ncnews.models");
 
 exports.getEndpoints = (request, response) => {
     response.status(200).json({endpoints});
@@ -78,5 +78,16 @@ exports.patchArticleVotesById = (request, response, next) => {
     })
     .catch((error) => {
         next(error)
+    })
+}
+
+exports.deleteCommentById = (request, response, next) => {
+    const { comment_id } = request.params;
+    removeCommentById(comment_id)
+    .then(() => {
+        response.status(204).send()
+    })
+    .catch((error) => {
+        next(error);
     })
 }

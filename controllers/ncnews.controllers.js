@@ -1,5 +1,5 @@
 const endpoints = require("../endpoints.json");
-const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById, addComment, addArticleVotesById, removeCommentById } = require("../models/ncnews.models");
+const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById, addComment, addArticleVotesById, removeCommentById, fetchUsers } = require("../models/ncnews.models");
 
 exports.getEndpoints = (request, response) => {
     response.status(200).json({endpoints});
@@ -16,6 +16,12 @@ exports.getArticles = (request, response) => {
         response.status(200).json({ articles })
     });
 };
+
+exports.getUsers = (request, response) => {
+    fetchUsers().then((users) => {
+        response.status(200).json({ users })
+    });
+}
 
 exports.getArticleById = (request, response, next) => {
     const { article_id } = request.params;

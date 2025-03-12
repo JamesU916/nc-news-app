@@ -144,6 +144,41 @@ describe("GET /api/articles?sort_by=:sort_by&order=:order", () => {
   })
 })
 
+describe("GET /api/articles?topic=:topic", () => {
+  test("200: Responds with all articles that match the specified topic", () => {
+    return request(app)
+    .get("/api/articles?topic=mitch")
+    .expect(200)
+    .then(({ body }) => {
+      const articles = body.articles
+      expect(articles.length).toBe(12)
+      articles.forEach((article) => {
+        expect(article.topic).toBe("mitch")
+        expect(article.topic.length).not.toBe(0)
+      })
+    })
+  })
+  test("200: Responds with an empty array if the topic exists but has no articles", () => {
+    return request(app)
+    .get("/api/articles?topic=paper")
+    .expect(200)
+    .then(({ body }) => {
+      const articles = body.articles
+      expect(articles).toEqual([])
+      expect(articles.length).toBe(0)
+      expect(articles).toBeArray
+    })
+  })
+  test("404: Responds with an error if the topic does not exist", () => {
+    return request(app)
+    .get("/api/articles?topic=badRequest")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("404 Not Found - Topic does not exist")
+    })
+  })
+})
+
 describe("GET /api/articles/:article_id", () => {
   test("200: Responds with an article with the specified ID", () => {
     return request(app)

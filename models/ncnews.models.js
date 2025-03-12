@@ -6,7 +6,7 @@ exports.fetchTopics = () => {
     });
 };
 
-exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
+exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
     const validSorting = ["author", "title", "article_id", "topic", "created_at", "votes", "article_img_url"]
     const validOrdering = ["asc", "desc"]
     if(!validSorting.includes(sort_by)) {
@@ -15,13 +15,27 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
     if(!validOrdering.includes(order)) {
         return Promise.reject({ status: 400, msg: "400 Bad Request - Must be ordered in either ascending or descending order"})
     }
-    const queryString = (`SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
+    let queryString = (`SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
         COUNT (comments.comment_id) AS comment_count FROM articles 
-        LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`)
-        return db.query(queryString)
-        .then(({ rows }) => {
-            return rows
-        });
+        LEFT JOIN comments ON articles.article_id = comments.article_id `)
+    const queryParameters = []
+    if(topic) {
+        queryString += `WHERE articles.topic = $1 `;
+        queryParameters.push(topic);
+    }
+    queryString += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+    return db.query(queryString, queryParameters).then(({ rows }) => {
+        if(rows.length === 0 && topic) {
+            return db.query(`SELECT * from topics WHERE slug = $1`, [topic])
+            .then(({ rows: topics }) => {
+                if(topics.length === 0) {
+                    return Promise.reject({status: 404, msg: "404 Not Found - Topic does not exist"})
+                }
+                return []
+            })
+        } 
+        return rows;
+    })
 };
 
 exports.fetchUsers = () => {

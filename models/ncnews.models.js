@@ -8,7 +8,7 @@ exports.fetchTopics = () => {
 
 exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
     const validSorting = ["author", "title", "article_id", "topic", "created_at", "votes", "article_img_url"]
-    const validOrdering = ["asc", "desc"]
+    const validOrdering = ["asc", "desc", "ASC", "DESC"]
     if(!validSorting.includes(sort_by)) {
         return Promise.reject({ status: 400, msg: "400 Bad Request - Must be sorted by a valid column" })
     }

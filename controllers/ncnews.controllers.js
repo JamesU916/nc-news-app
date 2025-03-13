@@ -1,4 +1,3 @@
-const { sort } = require("../db/data/test-data/articles");
 const endpoints = require("../endpoints.json");
 const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById, addComment, addArticleVotesById, removeCommentById, fetchUsers } = require("../models/ncnews.models");
 

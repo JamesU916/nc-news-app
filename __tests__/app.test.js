@@ -115,6 +115,17 @@ describe("GET /api/articles?sort_by=:sort_by&order=:order", () => {
       expect(articles[12].title).toBe("Z")
     })
   })
+  test("200: Responds with all articles sorted by title in ascending order when ASC is passed in uppercase", () => {
+    return request(app)
+    .get("/api/articles?sort_by=title&order=ASC")
+    .expect(200)
+    .then(({ body }) => {
+      const articles = body.articles
+      expect(articles.length).toBe(13)
+      expect(articles[0].title).toBe("A")
+      expect(articles[12].title).toBe("Z")
+    })
+  })
   test("200: Responds with all articles sorted by author in descending order when no order query is passed", () => {
     return request(app)
     .get("/api/articles?sort_by=author")

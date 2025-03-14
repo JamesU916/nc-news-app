@@ -1,5 +1,6 @@
+const { request, response } = require("../app");
 const endpoints = require("../endpoints.json");
-const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById, addComment, addArticleVotesById, removeCommentById, fetchUsers, fetchUserByUsername } = require("../models/ncnews.models");
+const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById, addComment, addArticleVotesById, removeCommentById, fetchUsers, fetchUserByUsername, addCommentVotesById } = require("../models/ncnews.models");
 
 exports.getEndpoints = (request, response) => {
     response.status(200).json({endpoints});
@@ -95,6 +96,21 @@ exports.patchArticleVotesById = (request, response, next) => {
     addArticleVotesById(inc_votes, article_id)
     .then((article) => {
         response.status(200).send({ article })
+    })
+    .catch((error) => {
+        next(error)
+    })
+}
+
+exports.patchCommentById = (request, response, next) => {
+    const { comment_id } = request.params;
+    const { inc_votes } = request.body;
+    if (inc_votes === undefined) {
+        return response.status(400).json({ msg: "400 Bad Request"})
+    }
+    addCommentVotesById(inc_votes, comment_id)
+    .then((comment) => {
+        response.status(200).send({ comment })
     })
     .catch((error) => {
         next(error)

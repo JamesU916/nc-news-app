@@ -478,6 +478,75 @@ describe("PATCH: /api/articles/:article_id", () => {
   })
 })
 
+describe("PATCH: /api/comments/:comment_id", () => {
+  test("200: Responds with the updated comment with incremented votes", () => {
+    return request(app)
+    .patch("/api/comments/1")
+    .send({ inc_votes: 1 })
+    .expect(200)
+    .then(({ body }) => {
+      comment = body.comment;
+      expect(comment.votes).toBe(17);
+    })
+  })
+  test("200: Responds with the updated comment with decremented votes", () => {
+    return request(app)
+    .patch("/api/comments/1")
+    .send({ inc_votes: -5 })
+    .expect(200)
+    .then(({ body }) => {
+      comment = body.comment;
+      expect(comment.votes).toBe(11);
+    })
+  })
+  test("200: Responds with an updated commment with incremented votes whilst ignoring other keys", () => {
+    return request(app)
+    .patch("/api/comments/1")
+    .send({ inc_votes: 1, dec_votes: 10})
+    .expect(200)
+    .then(({ body }) => {
+      comment = body.comment;
+      expect(comment.votes).toBe(17);
+    })
+  })
+  test("400: Responds with an error if the increment value is not of number value", () => {
+    return request(app)
+    .patch("/api/comments/1")
+    .send({ inc_votes: "badRequest" })
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request")
+    })
+  })
+  test("400: Responds with an error if the object passed does not have an inc_votes key", () => {
+    return request(app)
+    .patch("/api/comments/1")
+    .send({ wrong_key: 1 })
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request")
+    })
+  })
+  test("400: Responds with an error if the comment id is not of number value", () => {
+    return request(app)
+    .patch("/api/comments/badRequest")
+    .send({ inc_votes: 1 })
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("400 Bad Request")
+    })
+  })
+  test("404: Responds with an error if the comment does not exist", () => {
+    return request(app)
+    .patch("/api/comments/9999999")
+    .send({ inc_votes: 1 })
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("404 Not Found")
+    })
+  })
+})
+
 describe("DELETE: /api/comments/:comment_id", () => {
   test("204: Deletes the comment with the specified ID and will not return anything", () => {
     return request(app)

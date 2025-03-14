@@ -1,5 +1,5 @@
 const endpoints = require("../endpoints.json");
-const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById, addComment, addArticleVotesById, removeCommentById, fetchUsers } = require("../models/ncnews.models");
+const { fetchTopics, fetchArticleById, fetchArticles, fetchArticleCommentsById, addComment, addArticleVotesById, removeCommentById, fetchUsers, fetchUserByUsername } = require("../models/ncnews.models");
 
 exports.getEndpoints = (request, response) => {
     response.status(200).json({endpoints});
@@ -25,6 +25,16 @@ exports.getUsers = (request, response) => {
     fetchUsers().then((users) => {
         response.status(200).json({ users })
     });
+}
+
+exports.getUserByUsername = (request, response, next) => {
+    const { username } = request.params;
+    fetchUserByUsername(username).then((user) => {
+        response.status(200).json({ user })
+    })
+    .catch((error) => {
+        next(error)
+    })
 }
 
 exports.getArticleById = (request, response, next) => {

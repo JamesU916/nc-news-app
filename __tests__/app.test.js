@@ -73,6 +73,33 @@ describe("GET /api/users", () => {
   })
 })
 
+describe("GET /api/users/:username", () => {
+  test("200: Responds with a user object containing the specified properties", () => {
+    return request(app)
+    .get("/api/users/butter_bridge")
+    .expect(200)
+    .then(({ body }) => {
+      const user = body.user;
+      expect(user).toMatchObject({
+        username: "butter_bridge",
+        name: "jonny",
+        avatar_url: "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+      })
+      expect(typeof user.username).toBe("string")
+      expect(typeof user.name).toBe("string")
+      expect(typeof user.avatar_url).toBe("string")
+    })
+  })
+  test("404: Returns an error when no user exists with the specified username", () => {
+    return request(app)
+    .get("/api/users/notAUser")
+    .expect(404)
+    .then(({ body }) => {
+      expect (body.msg).toBe("404 User not found")
+    })
+  })
+})
+
 describe("GET /api/articles", () => {
   test("200: Responds with an array of article objects containing the specified properties, sorted by date order descending", () => {
     return request(app)
